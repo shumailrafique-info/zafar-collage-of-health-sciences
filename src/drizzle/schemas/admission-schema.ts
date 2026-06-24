@@ -16,6 +16,15 @@ export const genderEnum = pgEnum("gender", [
     "female",
 ]);
 
+export const admissionStatusEnum = pgEnum("admission_status", [
+    "pending",
+    "under_review",
+    "interview_scheduled",
+    "accepted",
+    "rejected",
+    "withdrawn",
+]);
+
 export const admissionForms = pgTable("admission_forms", {
     id: uuid("id").defaultRandom().primaryKey(),
 
@@ -44,6 +53,9 @@ export const admissionForms = pgTable("admission_forms", {
     cellNumber: varchar("cell_number", { length: 20, }).notNull(),
 
     image: jsonb("image").$type<UploadedFile>().notNull(),
+
+    status: admissionStatusEnum("status").notNull().default("pending"),
+
 
     createdAt: timestamp("created_at", { withTimezone: true, }).defaultNow().notNull(),
 

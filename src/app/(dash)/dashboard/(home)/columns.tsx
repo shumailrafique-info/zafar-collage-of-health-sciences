@@ -1,5 +1,6 @@
 "use client";
 
+import { AdmissionStatusDropdown } from "@/components/shared/admission-status-dropdown";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { DataTableColumnHeader } from "@/components/ui/data-table-column-header";
@@ -111,6 +112,17 @@ export const columns: ColumnDef<AdmissionType>[] = [
     {
         accessorKey: "cellNumber",
         header: "Cell Number",
+    },
+    {
+        accessorKey: "status",
+        header: "Status",
+        cell: ({ row }) => (
+            <AdmissionStatusDropdown
+                admissionId={row.original.id}
+                currentStatus={row.original.status || "pending"}
+            />
+        ),
+        enableSorting: true, // can still sort by status
     },
     {
         accessorKey: "createdAt",
