@@ -1,5 +1,22 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
+import {
+    DropdownMenu,
+    DropdownMenuCheckboxItem,
+    DropdownMenuContent,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from "@/components/ui/table";
 import {
     ColumnDef,
     ColumnFiltersState,
@@ -13,24 +30,6 @@ import {
     getSortedRowModel,
     useReactTable,
 } from "@tanstack/react-table";
-import * as React from "react";
-
-import { Button } from "@/components/ui/button";
-import {
-    DropdownMenu,
-    DropdownMenuCheckboxItem,
-    DropdownMenuContent,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from "@/components/ui/table";
 import {
     ChevronLeft,
     ChevronRight,
@@ -38,11 +37,21 @@ import {
     ChevronsRight,
     Search,
 } from "lucide-react";
+import * as React from "react";
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[];
     data: TData[];
 }
+
+const statusFilterOptions = [
+    { value: "pending", label: "Pending" },
+    { value: "under_review", label: "Under Review" },
+    { value: "interview_scheduled", label: "Interview Scheduled" },
+    { value: "accepted", label: "Accepted" },
+    { value: "rejected", label: "Rejected" },
+    { value: "withdrawn", label: "Withdrawn" },
+];
 
 // Custom global filter function that searches across multiple fields
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -109,6 +118,24 @@ export function DataTable<TData, TValue>({
         },
     });
 
+    // Handle filter dropdown changes
+    const handleFilterChange = (columnId: string, value: string) => {
+        const column = table.getColumn(columnId);
+        if (column) {
+            if (value === "all") {
+                column.setFilterValue(undefined);
+            } else {
+                column.setFilterValue(value);
+            }
+        }
+    };
+
+    // Get current filter value for a column
+    const getFilterValue = (columnId: string): string => {
+        const filter = columnFilters.find((f) => f.id === columnId);
+        return filter ? filter.value as string : "all";
+    };
+
     return (
         <div>
             {/* Toolbar */}
@@ -122,7 +149,33 @@ export function DataTable<TData, TValue>({
                         className="pl-8 rounded-sm h-10"
                     />
                 </div>
-                <div className="flex items-center gap-2 ml-auto">
+                <div className="flex flex-wrap items-center gap-2 ml-auto">
+                    {[
+                        {
+                            column: "status",
+                            options: statusFilterOptions,
+                            placeholder: "Filter by status",
+                        },
+                    ].map((filter) => (
+                        <Select
+                            key={filter.column}
+                            value={getFilterValue(filter.column)}
+                            onValueChange={(val) => handleFilterChange(filter.column, val)}
+                        >
+                            <SelectTrigger className="w-37.5 h-9! rounded-sm">
+                                <SelectValue placeholder={filter.placeholder || `Filter ${filter.column}`} />
+                            </SelectTrigger>
+                            <SelectContent className="rounded-sm">
+                                <SelectItem value="all" className="rounded-sm">All</SelectItem>
+                                {filter.options.map((opt) => (
+                                    <SelectItem key={opt.value} value={opt.value} className="rounded-sm">
+                                        {opt.label}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    ))}
+
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                             <Button variant="default" className="rounded-sm" size="lg">
@@ -148,6 +201,7 @@ export function DataTable<TData, TValue>({
                         </DropdownMenuContent>
                     </DropdownMenu>
                 </div>
+
             </div>
 
             {/* Table */}
@@ -245,6 +299,6 @@ export function DataTable<TData, TValue>({
                     </Button>
                 </div>
             </div>
-        </div>
+        </div >
     );
 }
