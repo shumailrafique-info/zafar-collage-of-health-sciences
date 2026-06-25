@@ -201,8 +201,8 @@ export default function AdmissionSheetPage({
                             />
 
                             <Field
-                                label="12-Marks / %"
-                                value={String(admissionRecord.age)}
+                                label="Age"
+                                value={String(Number(admissionRecord.age).toFixed(0))}
                             />
 
                             <Field

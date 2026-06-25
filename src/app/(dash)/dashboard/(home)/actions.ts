@@ -49,3 +49,18 @@ export async function updateAdmissionStatus(
         return { success: false, error: "Failed to update status" };
     }
 }
+
+export async function deleteAdmission(id: string): Promise<ApiResponse<{ id: string }>> {
+    try {
+        const auth = await ensureAdminAccess();
+        if (!auth.session) return auth.json;
+
+        // Optional: check existence before delete
+        await db.delete(admissionForms).where(eq(admissionForms.id, id));
+
+        return { success: true, data: { id } };
+    } catch (error) {
+        console.error("Failed to delete admission:", error);
+        return { success: false, error: "Failed to delete admission" };
+    }
+}

@@ -1,4 +1,4 @@
-import { getAdmissions, updateAdmissionStatus } from "@/app/(dash)/dashboard/(home)/actions";
+import { deleteAdmission, getAdmissions, updateAdmissionStatus } from "@/app/(dash)/dashboard/(home)/actions";
 import { AdmissionStatusType, AdmissionType } from "@/drizzle/types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -58,6 +58,44 @@ export function useUpdateAdmissionStatus() {
         },
         onSuccess: (data) => {
             toast.success(`Status updated to ${data.status}`);
+        },
+    });
+}
+
+export function useDeleteAdmission() {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: async (id: string) => {
+            const result = await deleteAdmission(id);
+            if (!result.success) throw new Error(result.error);
+            return result.data;
+        },
+        // Optimistic update: remove from list immediately
+        onMutate: async (id) => {
+            await queryClient.cancelQueries({ queryKey: [QUERY_KEY_ADMISSIONS] });
+            const previous = queryClient.getQueryData<AdmissionType[]>([QUERY_KEY_ADMISSIONS]);
+
+            if (previous) {
+                queryClient.setQueryData<AdmissionType[]>(
+                    [QUERY_KEY_ADMISSIONS],
+                    previous.filter((admission) => admission.id !== id)
+                );
+            }
+
+            return { previous };
+        },
+        onError: (err, id, context) => {
+            if (context?.previous) {
+                queryClient.setQueryData([QUERY_KEY_ADMISSIONS], context.previous);
+            }
+            toast.error(err.message || "Failed to delete admission");
+        },
+        onSettled: () => {
+            queryClient.invalidateQueries({ queryKey: [QUERY_KEY_ADMISSIONS] });
+        },
+        onSuccess: () => {
+            toast.success("Admission deleted successfully");
         },
     });
 }

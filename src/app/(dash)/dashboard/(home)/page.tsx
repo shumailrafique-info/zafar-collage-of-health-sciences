@@ -44,8 +44,8 @@ export default function AdmissionsPage() {
           description="Gender distribution"
         />
         <StatCard
-          title="Average Marks"
-          value={`${stats.avgMarks}%`}
+          title="Average Age"
+          value={`${stats.avgAge}`}
           icon={<Award className="h-5 w-5 text-yellow-600" />}
           description={`From ${stats.total} applicants`}
         />
@@ -89,11 +89,15 @@ function computeStats(admissions: AdmissionType[]) {
   const male = admissions.filter((a) => a.gender === "male").length;
   const female = total - male;
 
-  // Average marks percentage (convert to number if string)
-  const marks = admissions
-    .map((a) => Number(a.marksPercentage))
-    .filter((m) => !isNaN(m) && m >= 0 && m <= 100);
-  const avgMarks = marks.length > 0 ? (marks.reduce((sum, m) => sum + m, 0) / marks.length).toFixed(1) : "N/A";
+  // Average age
+  const ages = admissions
+    .map((a) => Number(a.age))
+    .filter((a) => !isNaN(a) && a >= 0 && a <= 100);
+
+  const avgAge =
+    ages.length > 0
+      ? `${(ages.reduce((sum, a) => sum + a, 0) / ages.length).toFixed(0)}`
+      : "N/A";
 
   // Province distribution
   const provinceCounts: Record<string, number> = {};
@@ -109,7 +113,7 @@ function computeStats(admissions: AdmissionType[]) {
     total,
     male,
     female,
-    avgMarks,
+    avgAge,
     topProvince,
     topProvinceCount,
   };

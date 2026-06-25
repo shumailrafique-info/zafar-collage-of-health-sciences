@@ -5,11 +5,18 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { DataTableColumnHeader } from "@/components/ui/data-table-column-header";
 import { AdmissionType } from "@/drizzle/types";
+import { useDeleteAdmission } from "@/lib/tanstack-react-query/hooks/admin-admissions";
 import { ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
-import { DownloadIcon } from "lucide-react";
+import { DownloadIcon, MoreHorizontal } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export const columns: ColumnDef<AdmissionType>[] = [
     {
@@ -134,26 +141,42 @@ export const columns: ColumnDef<AdmissionType>[] = [
                 : "N/A",
     },
     {
-        id: "id",
-        accessorKey: "id",
-        header: "Download Form",
-        cell: ({ row }) => {
-            const id = row.original.id;
-            return (
-                <div className="">
-                    <Button
-                        variant="default"
-                        asChild
-                        title="Download photo"
-                    >
-                        <Link href={`/d/${id}`} target="_blank">
-                            <DownloadIcon className="h-4 w-4" />
-                            Download Form
-                        </Link>
-                    </Button>
-                </div>
-            );
-        },
+        id: "actions",
+        header: "Actions",
+        cell: ({ row }) => <ActionsCell admission={row.original} />,
         enableSorting: false,
+        enableHiding: false,
     },
 ];
+
+
+function ActionsCell({ admission }: { admission: AdmissionType }) {
+    const deleteMutation = useDeleteAdmission();
+
+    const handleDelete = () => {
+        if (window.confirm("Are you sure you want to delete this admission record? This action cannot be undone.")) {
+            deleteMutation.mutate(admission.id);
+        }
+    };
+
+    return (
+        <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="h-8 w-8 p-0">
+                    <span className="sr-only">Open menu</span>
+                    <MoreHorizontal className="h-4 w-4" />
+                </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-fit rounded-sm">
+                <DropdownMenuItem asChild className="rounded-sm">
+                    <Link href={`/d/${admission.id}`} target="_blank">
+                        Download PDF
+                    </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={handleDelete} className="rounded-sm" variant="destructive">
+                    Delete Record
+                </DropdownMenuItem>
+            </DropdownMenuContent>
+        </DropdownMenu>
+    );
+}
