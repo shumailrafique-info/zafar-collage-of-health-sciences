@@ -38,7 +38,7 @@ const AdmissionFormPage = ({ editingRow }: Props) => {
             cnicOrBFormNumber: editingRow?.cnicOrBFormNumber ?? "",
             address: editingRow?.address ?? "",
             qualification: editingRow?.qualification ?? "",
-            marksPercentage: editingRow?.marksPercentage ? Number(editingRow?.marksPercentage) : 0,
+            age: editingRow?.age ? Number(editingRow?.age) : 0,
             cellNumber: editingRow?.cellNumber ?? "",
             image: editingRow?.image ? [editingRow.image] : [],
         },
@@ -78,7 +78,7 @@ const AdmissionFormPage = ({ editingRow }: Props) => {
                 cnicOrBFormNumber: editingRow.cnicOrBFormNumber,
                 address: editingRow.address,
                 qualification: editingRow.qualification,
-                marksPercentage: Number(editingRow.marksPercentage),
+                age: Number(editingRow.age),
                 cellNumber: editingRow.cellNumber,
                 image: editingRow.image ? [editingRow.image] : [],
             });
@@ -94,7 +94,7 @@ const AdmissionFormPage = ({ editingRow }: Props) => {
                 cnicOrBFormNumber: "",
                 address: "",
                 qualification: "",
-                marksPercentage: 0,
+                age: 0,
                 cellNumber: "",
                 image: [],
             });
@@ -318,17 +318,17 @@ const AdmissionFormPage = ({ editingRow }: Props) => {
 
                         {/* Marks Percentage */}
                         <Controller
-                            name="marksPercentage"
+                            name="age"
                             control={form.control}
                             render={({ field, fieldState }) => (
                                 <Field className="gap-1">
                                     <FieldLabel>
-                                        Marks Percentage <span className="text-red-500">*</span>
+                                        Age <span className="text-red-500">*</span>
                                     </FieldLabel>
                                     <Input
                                         type="number"
-                                        step="0.01"
-                                        min="0"
+                                        step="1"
+                                        min="1"
                                         max="100"
                                         {...field}
                                         onChange={(e) =>

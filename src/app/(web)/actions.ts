@@ -36,7 +36,7 @@ export async function createAdmission(
                 cnicOrBFormNumber: parsed.data.cnicOrBFormNumber,
                 address: parsed.data.address,
                 qualification: parsed.data.qualification,
-                marksPercentage: String(parsed.data.marksPercentage),
+                age: String(parsed.data.age),
                 cellNumber: parsed.data.cellNumber,
                 image: image,
             })

@@ -31,8 +31,8 @@ export const admissionFormSchema = z.object({
     qualification: z
         .string()
         .min(2, "Qualification is required"),
-    marksPercentage: z
-        .number("Please enter valid percentage")
+    age: z
+        .number("Please enter valid age")
         .min(0)
         .max(100),
     cellNumber: z

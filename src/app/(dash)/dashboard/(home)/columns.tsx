@@ -9,6 +9,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
 import { DownloadIcon } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 
 export const columns: ColumnDef<AdmissionType>[] = [
     {
@@ -105,9 +106,9 @@ export const columns: ColumnDef<AdmissionType>[] = [
         header: "Qualification",
     },
     {
-        accessorKey: "marksPercentage",
-        header: "Marks %",
-        cell: ({ row }) => `${row.original.marksPercentage}%`,
+        accessorKey: "age",
+        header: "Age",
+        cell: ({ row }) => `${Number(row.original.age).toFixed(0)}`,
     },
     {
         accessorKey: "cellNumber",
@@ -131,5 +132,28 @@ export const columns: ColumnDef<AdmissionType>[] = [
             row.original.createdAt
                 ? format(new Date(row.original.createdAt), "PPP p")
                 : "N/A",
+    },
+    {
+        id: "id",
+        accessorKey: "id",
+        header: "Download Form",
+        cell: ({ row }) => {
+            const id = row.original.id;
+            return (
+                <div className="">
+                    <Button
+                        variant="default"
+                        asChild
+                        title="Download photo"
+                    >
+                        <Link href={`/d/${id}`} target="_blank">
+                            <DownloadIcon className="h-4 w-4" />
+                            Download Form
+                        </Link>
+                    </Button>
+                </div>
+            );
+        },
+        enableSorting: false,
     },
 ];

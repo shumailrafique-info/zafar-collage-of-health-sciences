@@ -48,7 +48,7 @@ export const admissionForms = pgTable("admission_forms", {
 
     qualification: varchar("qualification", { length: 255, }).notNull(),
 
-    marksPercentage: numeric("marks_percentage", { precision: 5, scale: 2, }).notNull(),
+    age: numeric("age", { precision: 5, scale: 2, }).notNull(),
 
     cellNumber: varchar("cell_number", { length: 20, }).notNull(),
 
